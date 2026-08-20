@@ -1,1 +1,26 @@
+name: Check Race Marshalling
 
+on:
+  schedule:
+    # Runs every 5 minutes (GitHub Cron min interval)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allows manual trigger for testing
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install requests twilio
+      - name: Run check
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          FROM_WHATSAPP: ${{ secrets.FROM_WHATSAPP }}
+          TO_WHATSAPP: ${{ secrets.TO_WHATSAPP }}
+        run: python script.py
